@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class ChatThread extends Thread {
-    Set<Room> roomSet = new HashSet<>();
+    private Set<Room> roomSet = new HashSet<>();
 
     //생성자를 통해서 클라이언트 소켓을 얻어옴.
     private Socket socket;
@@ -20,9 +20,10 @@ public class ChatThread extends Thread {
     private BufferedReader in;
     PrintWriter out;
 
-    public ChatThread(Socket socket, Map<String, PrintWriter> chatClients) {
+    public ChatThread(Socket socket, Map<String, PrintWriter> chatClients, Set<Room> roomSet) {
         this.socket = socket;
         this.chatClients = chatClients;
+        this.roomSet = roomSet;
 
         //클라이언트가 생성될 때 클라이언트로 부터 아이디를 얻어오게 하고 싶어요.
         //각각 클라이언트와 통신 할 수 있는 통로얻어옴.
@@ -37,9 +38,9 @@ public class ChatThread extends Thread {
             System.out.println("새로운 사용자의 아이디는 " + id + "입니다." + "(" + clientAddress + ")");
 
             //동시에 일어날 수도..
-            synchronized (chatClients) {
-                chatClients.put(this.id, out);
-            }
+//            synchronized (chatClients) {
+//                chatClients.put(this.id, out);
+//            }
 
 
         } catch (Exception e) {
@@ -65,7 +66,7 @@ public class ChatThread extends Thread {
                     out.println("채팅방 목록입니다");
                     int cnt = 1;
                     for (Room room : roomSet) {
-                        System.out.println(cnt + ": " + room.getName());
+                        out.println(cnt + ": " + room.getName());
                         cnt++;
                     }
                 }else if ("/create".equalsIgnoreCase(msg)) {
@@ -83,11 +84,10 @@ public class ChatThread extends Thread {
                         Room newRoom = new Room(roomName);
                         newRoom.addClient(id);
                         roomSet.add(newRoom);
-                        out.println(newRoom);
                     }
                 } else if ("/join".equalsIgnoreCase(msg)) {
                     roomName = in.readLine();
-                    String roomName = stdIn.nextLine();
+                    out.println(roomName);
                     boolean roomFound = false;
                     for (Room room : roomSet) {
                         if (room.getName().equals(roomName)) {
@@ -135,8 +135,17 @@ public class ChatThread extends Thread {
         }
     }
 
-    //전체 사용자에게 알려주는 메서드
+    //방 클라이언트에게 알려주는 메서드
     public void broadcast(String msg) {
+        for(Room room : roomSet){
+            if(room.getClients().contains(id)){
+                for(String client : room.getClients()){
+                    synchronized (chatClients) {
+                        chatClients.put(client, out);
+                    }
+                }
+            }
+        }
         for (PrintWriter out : chatClients.values()) {
             out.println(msg);
 //            out.flush();

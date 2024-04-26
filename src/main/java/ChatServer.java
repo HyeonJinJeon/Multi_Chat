@@ -2,14 +2,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ChatServer {
     public static void main(String[] args) {
-        List<String> roomList = new ArrayList<>();
+        Set<Room> roomSet = new HashSet<>();
+
         //1. 서버소켓을 생성!!
         try (ServerSocket serverSocket = new ServerSocket(12345);) {
             System.out.println("서버가 준비되었습니다.");
@@ -21,7 +19,7 @@ public class ChatServer {
                 Socket socket = serverSocket.accept();
                 //Thread 이용!!
                 //여러명의 클라이언트의 정보를 기억할 공간
-                new ChatThread(socket, chatClients).start();
+                new ChatThread(socket, chatClients, roomSet).start();
 //                new Room(socket, chatClients).run();
 
             }

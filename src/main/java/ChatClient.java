@@ -37,13 +37,6 @@ public class ChatClient {
                 if ("/bye".equals(userInput)) {
                     out.println(userInput);
                     break;
-                }else if(userInput.startsWith("/list")){
-                    System.out.println("채팅방 목록입니다");
-                    int cnt = 1;
-                    for (Room room : roomSet) {
-                        System.out.println(cnt + ": " + room.getName());
-                        cnt++;
-                    }
                 }else if (userInput.startsWith("/create")) {
                     System.out.println("방 이름을 입력하세요");
                     String roomName = stdIn.nextLine();
