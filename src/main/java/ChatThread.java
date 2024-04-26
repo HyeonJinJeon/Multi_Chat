@@ -3,9 +3,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
 public class ChatThread extends Thread {
+    Set<Room> roomSet = new HashSet<>();
+
     //생성자를 통해서 클라이언트 소켓을 얻어옴.
     private Socket socket;
     private String id;
@@ -50,27 +55,55 @@ public class ChatThread extends Thread {
         //연결된 클라이언트가 메시지를 전송하면, 그 메시지를 받아서 다른 사용자들에게 보내줌..
         String msg = null;
         try {
+            Scanner stdIn = new Scanner(System.in);
+
             while ((msg = in.readLine()) != null) {
                 if ("/bye".equalsIgnoreCase(msg)){ // 접속 종료
                     System.out.println(id + " 닉네임의 사용자가 연결을 끊었습니다.");
                     break;
-                }else if(msg.startsWith("/to")){ // 귓속말
-                    String[] parts = msg.split(" ", 3);
-                    for (String name : chatClients.keySet()){
-                        if(name.equalsIgnoreCase(parts[1])){
-                            chatClients.get(parts[1]).println("[귓속말] " + id + " : " + parts[2]);
+                }else if("/list".equalsIgnoreCase(msg)){
+                    out.println("채팅방 목록입니다");
+                    int cnt = 1;
+                    for (Room room : roomSet) {
+                        System.out.println(cnt + ": " + room.getName());
+                        cnt++;
+                    }
+                }else if ("/create".equalsIgnoreCase(msg)) {
+                    in.readLine();
+                    boolean roomExists = false;
+                    for (Room room : roomSet) {
+                        if (room.getName().equals(roomName)) {
+                            roomExists = true;
+                            out.println("이미 존재하는 방입니다");
                             break;
                         }
                     }
-                }else if(msg.startsWith("/list")){ // 방 목록 보기
+                    if (!roomExists) {
+                        out.println("새로운 채팅방 생성 완료!");
+                        Room newRoom = new Room(roomName);
+                        newRoom.addClient(id);
+                        roomSet.add(newRoom);
+                        out.println(newRoom);
+                    }
+                } else if ("/join".equalsIgnoreCase(msg)) {
+                    in.readLine();
+                    String roomName = stdIn.nextLine();
+                    boolean roomFound = false;
+                    for (Room room : roomSet) {
+                        if (room.getName().equals(roomName)) {
+                            roomFound = true;
+                            room.addClient(id);
+                            out.println("방에 참여하였습니다.");
+                            break;
+                        }
+                    }
+                    if (!roomFound) {
+                        out.println("해당하는 방을 찾을 수 없습니다.");
+                    }
+                } else if(msg.startsWith("/exit")){
 
-                }else if(msg.startsWith("/create")){ // 방 생성
-
-                }else if(msg.startsWith("/join")){ // 방 입장
-
-                }else if(msg.startsWith("/exit")){ // 방 나가기
-
-                }else{
+                }
+                else{
                     broadcast(id + " : " + msg);
                 }
             }

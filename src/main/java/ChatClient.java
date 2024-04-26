@@ -46,36 +46,11 @@ public class ChatClient {
                 }else if (userInput.startsWith("/create")) {
                     System.out.println("방 이름을 입력하세요");
                     String roomName = stdIn.nextLine();
-                    boolean roomExists = false;
-                    for (Room room : roomSet) {
-                        if (room.getName().equals(roomName)) {
-                            roomExists = true;
-                            System.out.println("이미 존재하는 방입니다");
-                            break;
-                        }
-                    }
-                    if (!roomExists) {
-                        System.out.println("새로운 채팅방 생성 완료!");
-                        Room newRoom = new Room(roomName);
-                        newRoom.addClient(nickname);
-                        roomSet.add(newRoom);
-                        out.println(newRoom);
-                    }
+                    out.println(roomName);
                 } else if (userInput.startsWith("/join")) {
                     System.out.println("참여할 방 이름을 입력하세요");
                     String roomName = stdIn.nextLine();
-                    boolean roomFound = false;
-                    for (Room room : roomSet) {
-                        if (room.getName().equals(roomName)) {
-                            roomFound = true;
-                            room.addClient(nickname);
-                            System.out.println("방에 참여하였습니다.");
-                            break;
-                        }
-                    }
-                    if (!roomFound) {
-                        System.out.println("해당하는 방을 찾을 수 없습니다.");
-                    }
+                    out.println(roomName);
                 } else if(userInput.startsWith("/exit")){
 
                 }

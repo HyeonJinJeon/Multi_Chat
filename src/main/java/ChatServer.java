@@ -22,6 +22,7 @@ public class ChatServer {
                 //Thread 이용!!
                 //여러명의 클라이언트의 정보를 기억할 공간
                 new ChatThread(socket, chatClients).start();
+//                new Room(socket, chatClients).run();
 
             }
         } catch (Exception e) {
