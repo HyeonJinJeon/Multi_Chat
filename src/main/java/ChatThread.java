@@ -69,7 +69,7 @@ public class ChatThread extends Thread {
                         cnt++;
                     }
                 }else if ("/create".equalsIgnoreCase(msg)) {
-                    in.readLine();
+                    roomName = in.readLine();
                     boolean roomExists = false;
                     for (Room room : roomSet) {
                         if (room.getName().equals(roomName)) {
@@ -86,7 +86,7 @@ public class ChatThread extends Thread {
                         out.println(newRoom);
                     }
                 } else if ("/join".equalsIgnoreCase(msg)) {
-                    in.readLine();
+                    roomName = in.readLine();
                     String roomName = stdIn.nextLine();
                     boolean roomFound = false;
                     for (Room room : roomSet) {

@@ -31,6 +31,7 @@ public class ChatClient {
             String userInput;
             while (true) {
                 userInput = stdIn.nextLine();
+                out.println(userInput);
 
                 // '/bye'를 입력하면 클라이언트를 종료합니다.
                 if ("/bye".equals(userInput)) {
@@ -54,9 +55,8 @@ public class ChatClient {
                 } else if(userInput.startsWith("/exit")){
 
                 }
+                    // 서버에 메시지를 전송합니다.
 
-                // 서버에 메시지를 전송합니다.
-                out.println(userInput);
             } // while
 
             // 클라이언트와 서버는 명시적으로 close를 합니다. close를 할 경우 상대방쪽의 readLine()이 null을 반환됩니다. 이 값을 이용하여 접속이 종료된 것을 알 수 있습니다.
