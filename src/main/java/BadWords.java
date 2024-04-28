@@ -35,22 +35,25 @@ class BadWords {
             "지랼", "지럴", "지뢀", "쪼까튼", "쪼다", "쪼다새끼", "찌랄", "찌질이", "창남", "창녀", "창녀버지", "창년", "처먹고", "처먹을", "쳐먹고", "쳐쑤셔박어", "촌씨브라리",
             "촌씨브랑이", "촌씨브랭이", "크리토리스", "큰보지", "클리토리스", "트랜스젠더", "페니스", "항문수셔", "항문쑤셔", "허덥", "허버리년", "허벌년", "허벌보지", "허벌자식", "허벌자지",
             "허접", "허젚", "허졉", "허좁", "헐렁보지", "혀로보지핧기", "호냥년", "호로", "호로새끼", "호로자슥", "호로자식", "호로짜식", "호루자슥", "호모", "호졉", "호좁", "후라덜넘",
-            "후장", "후장꽂아", "후장뚫어", "흐접", "흐젚", "흐졉", "bitch", "fuck", "fuckyou", "nflavor", "penis", "pennis", "pussy", "sex"
+            "후장", "후장꽂아", "후장뚫어", "흐접", "흐젚", "흐졉", "bitch", "fuck", "fuckyou", "nflavor", "penis", "pennis", "pussy", "sex", "ㅈ", "ㅈ같은", "년"
     };
 
     public String[] getKoreaBadWords() {
         return koreaBadWords;
     }
+
+    //욕설 필터링 구현
     public String filteringBadWords(String msg){
-//        String[] badWords = getKoreaBadWords();
         String filteringMsg = msg;
-        String star = "";
         for(int i = 0; i < koreaBadWords.length; i++){
             if(msg.contains(koreaBadWords[i])){
+                String star = "";
+                //욕설의 길이만큼 *로 대체
                 for(int j = 0; j < koreaBadWords[i].length(); j++){
                     star += "*";
                 }
-                filteringMsg = msg.replaceAll(koreaBadWords[i], star);
+                // 필터링된 메시지를 기존 문자열 대신 star로 대체하여 filteringMsg에 저장
+                filteringMsg = filteringMsg.replaceAll(koreaBadWords[i], star);
             }
         }
         return filteringMsg;
