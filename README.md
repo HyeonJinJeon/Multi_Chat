@@ -8,6 +8,7 @@
 
 ## 📽️ Project Info.
 
+- 프로젝트 설명 : Java의 Socket과 Thread를 사용하여 여러 Client 간의 채팅 시스템
 - 착수 일 : 2024년 4월 26일 금
 - 마감 일 : 2024년 4월 29일 월
 
