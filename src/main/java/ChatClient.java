@@ -20,6 +20,20 @@ public class ChatClient {
             System.out.print("Enter your nickname: ");
             String nickname = stdIn.nextLine();
             out.println(nickname); // 서버에 닉네임을 전송
+
+            //닉네임이 중복이면 다시 작성할 수 있도록
+            while(true){
+                String check = in.readLine();
+                System.out.println(check);
+                if(check.equals("id를 다시 입력해주세요")){
+                    System.out.print("Enter your another nickname: ");
+                    nickname = stdIn.nextLine();
+                    out.println(nickname);
+                } else {
+                    break;
+                }
+            }
+
             String clientAddress = socket.getInetAddress().getHostAddress();
             out.println(clientAddress); // 서버에 IP 주소 전송
 
@@ -46,7 +60,10 @@ public class ChatClient {
                     String roomName = stdIn.nextLine();
                     out.println(roomName);
                 } else if(userInput.startsWith("/exit")){
-
+                    String remove = in.readLine();
+                    if(!remove.equals(null)){
+                        System.out.println(remove);
+                    }
                 }
                     // 서버에 메시지를 전송합니다.
 
