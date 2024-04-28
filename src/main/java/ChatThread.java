@@ -8,6 +8,7 @@ import java.util.Set;
 public class ChatThread extends Thread {
     private Set<Room> roomSet = new HashSet<>();
     private Set<String> clients = new HashSet<>();
+    private BadWords badWords = new BadWords();
 
 
     //생성자를 통해서 클라이언트 소켓을 얻어옴.
@@ -194,7 +195,8 @@ public class ChatThread extends Thread {
                 for(String client : room.getClients()){
                     PrintWriter out = chatClients.get(client);
                     if (out != null) {
-                        out.println(msg);
+                        String filteringMsg = badWords.filteringBadWords(msg);
+                        out.println(filteringMsg);
                     }
                 }
                 try{
