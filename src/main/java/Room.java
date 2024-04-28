@@ -13,10 +13,6 @@ public class Room{
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Set<String> getClients() {
         return clients;
     }
