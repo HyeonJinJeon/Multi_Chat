@@ -135,6 +135,9 @@ public class ChatThread extends Thread {
                     if (!clientFound) {
                         out.println("현재 채팅방에 있지 않습니다.");
                     }
+                }else if(msg.startsWith("/to")){
+                    String[] parts = msg.split(" ", 3);
+                    whisper(id, parts);
                 }else if(msg.startsWith("/users")){
                     out.println("전체 유저 목록입니다");
                     for(String client : clients){
@@ -207,6 +210,18 @@ public class ChatThread extends Thread {
                             throw new RuntimeException(e);
                         }
                     }
+                }
+            }
+        }
+    }
+    //귓속말
+    public void whisper(String id, String[] parts) {
+        for(Room room : roomSet){
+            if(room.getClients().contains(id)){
+                if (room.getClients().contains(parts[1])){
+                    chatClients.get(parts[1]).println("[귓속말] " + id + " : " + parts[2]);
+                }else{
+                    out.println("해당 사용자가 없습니다");
                 }
             }
         }
