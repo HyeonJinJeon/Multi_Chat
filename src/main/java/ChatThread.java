@@ -1,3 +1,6 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.io.*;
 import java.net.Socket;
 import java.util.HashSet;
@@ -8,6 +11,7 @@ import java.util.Set;
 public class ChatThread extends Thread {
     private Set<Room> roomSet = new HashSet<>(); //채팅망 객체 목록
     private Set<String> clients = new HashSet<>(); //사용자 목록
+    private Set<String> muteClients = new HashSet<>();
     private BadWords badWords = new BadWords(); //혐오 발언 객체 생성
 
 
@@ -143,7 +147,14 @@ public class ChatThread extends Thread {
                 }else if(msg.startsWith("/to")){ //귓속말 기능
                     String[] parts = msg.split(" ", 3);
                     whisper(id, parts);
-                }else if(msg.startsWith("/users")){ // 전체 유저 목록 확인
+                }else if(msg.startsWith("/mute")){
+                    String[] parts = msg.split(" ", 2);
+                    mute(parts);
+                }else if(msg.startsWith("/cancelMute")){
+                    String[] parts = msg.split(" ", 2);
+                    cancelMute(parts);
+                }
+                else if(msg.startsWith("/users")){ // 전체 유저 목록 확인
                     out.println("전체 유저 목록입니다");
                     for(String client : clients){
                         out.println(client);
@@ -200,9 +211,10 @@ public class ChatThread extends Thread {
             if(room.getClients().contains(id)){
                 for(String client : room.getClients()){
                     PrintWriter out = chatClients.get(client);
-                    if (out != null) {
+                    if (out != null && !muteClients.contains(client)) {
                         String filteringMsg = badWords.filteringBadWords(msg);
                         out.println(filteringMsg);
+                        playSound(out);
                     }
                 }
                 try{
@@ -234,6 +246,38 @@ public class ChatThread extends Thread {
             }
         }
     }
+    //사용자 차딘
+    public void mute(String[] parts){
+        if (parts.length < 2) {
+            out.println("사용법: /mute [사용자이름]");
+            return;
+        }
+
+        String targetUser = parts[1]; // 차단 대상 사용자의 이름
+        boolean userFound = false; // 사용자 찾았는지 여부
+
+        for (Room room : roomSet) {
+            if (room.getClients().contains(targetUser)) {
+                muteClients.add(targetUser);
+                out.println(targetUser + "을(를) 차단합니다.");
+                userFound = true;
+                break; // 사용자를 찾았으므로 루프를 종료합니다.
+            }
+        }
+
+        // 사용자를 찾지 못한 경우 메시지를 출력합니다.
+        if (!userFound) {
+            out.println("해당 사용자를 찾을 수 없습니다.");
+        }
+    }
+    public void cancelMute(String[] parts){
+        if(muteClients.contains(parts[1])){
+            muteClients.remove(parts[1]);
+            out.println(parts[1] + "을(를) 차단 취소하였습니다.");
+        }else {
+            out.println("차단된 사용자가 아닙니다");
+        }
+    }
     //방 사람인지 확인하는 메서드
     public void joinRoom(String id) {
         for(Room room : roomSet){
@@ -246,7 +290,7 @@ public class ChatThread extends Thread {
         }
     }
     //방에서 나가는 사람 확인하는 메서드
-    public void exitRoom(String ㅑㅇ) {
+    public void exitRoom(String id) {
         for(Room room : roomSet){
             if(room.getClients().contains(id)){
                 for(String client : room.getClients()){
@@ -255,5 +299,21 @@ public class ChatThread extends Thread {
                 }
             }
         }
+    }
+    public static synchronized void playSound(PrintWriter out) {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    out.println("알림음 재생");
+                    Clip clip = AudioSystem.getClip();
+                    AudioInputStream inputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/katalk.wav"));
+                    clip.open(inputStream);
+                    clip.start();
+                    Thread.sleep(clip.getMicrosecondLength()/1000);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }).start();
     }
 }
